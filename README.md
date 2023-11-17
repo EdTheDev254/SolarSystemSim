@@ -6,9 +6,6 @@ A simple Pygame simulation of planets orbiting around a star with gravitational 
 
 - [Features](#features)
 - [Installation](#installation)
-- [Usage](#usage)
-- [Controls](#controls)
-- [License](#license)
 
 ## Features
 
@@ -21,3 +18,4 @@ A simple Pygame simulation of planets orbiting around a star with gravitational 
 
 1. Ensure you have Python and Pygame installed.
 
+![Simulation Preview](screenImage.png)
