@@ -178,7 +178,8 @@ while running:
     ui_text = [
         "Left click to add a planet",
         "Right click to delete",
-        "Escape to exit window"
+        "Escape to exit window",
+        "Click on Planet to drag"
     ]
 
     for i, text in enumerate(ui_text):
