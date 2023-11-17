@@ -74,8 +74,9 @@ def is_planet_within_window(planet):
 
 # Main game loop
 running = True
+clock = pygame.time.Clock()  # Create a clock object to track time
 while running:
-    time_delta = pygame.time.Clock().tick(FPS) / 1000.0
+    time_delta = clock.tick(FPS) / 1000.0
 
     # Event handling
     for event in pygame.event.get():
@@ -141,7 +142,12 @@ while running:
         if not dragging_planet or (dragging_planet and planet != dragged_planet):
             planet.position = (planet.position[0] + planet.velocity[0] * dt, planet.position[1] + planet.velocity[1] * dt)
 
+        # Add the following code to limit the length of the orbit path
+        max_orbit_length = 500  # Adjust this value based on your preference
         orbit_lines[planet].append((int(planet.position[0]), int(planet.position[1])))
+        if len(orbit_lines[planet]) > max_orbit_length:
+            orbit_lines[planet] = orbit_lines[planet][-max_orbit_length:]
+
         planet.update_velocity_text()  # Update velocity text for each planet
 
         # Check if the planet is still within the window boundaries
@@ -161,18 +167,24 @@ while running:
     # Draw star
     pygame.draw.circle(screen, star.color, (int(star.position[0]), int(star.position[1])), star.radius)
 
-    # Draw planets, their orbit lines, and velocity text
+    # Draw planets, their orbit lines, velocity text, and FPS
     for planet, orbit_line in orbit_lines.items():
         pygame.draw.circle(screen, planet.color, (int(planet.position[0]), int(planet.position[1])), planet.radius)
 
-        # Draw orbit line for the planet
+        # Draw orbit line for the planet with fading effect
         for i in range(len(orbit_line) - 1):
             alpha_value = int(255 * (1 - i / len(orbit_line)))
-            pygame.draw.line(screen, (planet.color), orbit_line[i], orbit_line[i + 1], 1)
+            line_color = (*planet.color[:3], alpha_value)  # Add alpha value to planet color
+            pygame.draw.line(screen, line_color, orbit_line[i], orbit_line[i + 1], 1)
 
         # Draw velocity text for the planet
         if planet.velocity_text is not None:
             screen.blit(planet.velocity_text, (int(planet.position[0]) - planet.radius, int(planet.position[1]) - planet.radius - 20))
+
+    # Draw FPS text
+    fps_text = f"FPS: {int(clock.get_fps())}"
+    fps_render = font.render(fps_text, True, WHITE)
+    screen.blit(fps_render, (fps_render.get_width() - 50, 10))
 
     # Draw UI with instructions
     ui_text = [
@@ -181,6 +193,11 @@ while running:
         "Escape to exit window",
         "Click on Planet to drag"
     ]
+
+    # Draw number of instantiated planets on the left
+    instantiated_text = f"Instantiated Planets: {len(planets)}"
+    instantiated_render = font.render(instantiated_text, True, WHITE)
+    screen.blit(instantiated_render, (fps_render.get_width() - 50, 30))
 
     for i, text in enumerate(ui_text):
         text_render = font.render(text, True, WHITE)
