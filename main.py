@@ -21,7 +21,7 @@ WHITE = (255, 255, 255)
 YELLOW = (255, 255, 0)
 
 # Font
-font = pygame.font.Font(None, 36)
+font = pygame.font.Font(None, 24)  # Adjust the font size here
 
 # Define a celestial body class
 class CelestialBody:
@@ -31,6 +31,11 @@ class CelestialBody:
         self.position = position
         self.velocity = velocity
         self.color = color
+        self.velocity_text = None
+
+    def update_velocity_text(self):
+        velocity_text = f"Velocity: ({self.velocity[0]:.2f}, {self.velocity[1]:.2f})"
+        self.velocity_text = font.render(velocity_text, True, WHITE)
 
 # Initial conditions for the star and planet
 star = CelestialBody(mass=10000, radius=20, position=(SCREEN_WIDTH // 2, SCREEN_HEIGHT // 2), velocity=(0, 0), color=YELLOW)
@@ -137,6 +142,7 @@ while running:
             planet.position = (planet.position[0] + planet.velocity[0] * dt, planet.position[1] + planet.velocity[1] * dt)
 
         orbit_lines[planet].append((int(planet.position[0]), int(planet.position[1])))
+        planet.update_velocity_text()  # Update velocity text for each planet
 
         # Check if the planet is still within the window boundaries
         if not is_planet_within_window(planet):
@@ -155,14 +161,18 @@ while running:
     # Draw star
     pygame.draw.circle(screen, star.color, (int(star.position[0]), int(star.position[1])), star.radius)
 
-    # Draw planets and their orbit lines
+    # Draw planets, their orbit lines, and velocity text
     for planet, orbit_line in orbit_lines.items():
         pygame.draw.circle(screen, planet.color, (int(planet.position[0]), int(planet.position[1])), planet.radius)
 
         # Draw orbit line for the planet
         for i in range(len(orbit_line) - 1):
             alpha_value = int(255 * (1 - i / len(orbit_line)))
-            pygame.draw.line(screen, (255, 255, 255, alpha_value), orbit_line[i], orbit_line[i + 1], 1)
+            pygame.draw.line(screen, (planet.color), orbit_line[i], orbit_line[i + 1], 1)
+
+        # Draw velocity text for the planet
+        if planet.velocity_text is not None:
+            screen.blit(planet.velocity_text, (int(planet.position[0]) - planet.radius, int(planet.position[1]) - planet.radius - 20))
 
     # Draw UI with instructions
     ui_text = [
