@@ -20,6 +20,9 @@ BLACK = (0, 0, 0)
 WHITE = (255, 255, 255)
 YELLOW = (255, 255, 0)
 
+# Font
+font = pygame.font.Font(None, 36)
+
 # Define a celestial body class
 class CelestialBody:
     def __init__(self, mass, radius, position, velocity, color):
@@ -161,9 +164,20 @@ while running:
             alpha_value = int(255 * (1 - i / len(orbit_line)))
             pygame.draw.line(screen, (255, 255, 255, alpha_value), orbit_line[i], orbit_line[i + 1], 1)
 
+    # Draw UI with instructions
+    ui_text = [
+        "Left click to add a planet",
+        "Right click to delete",
+        "Escape to exit window"
+    ]
+
+    for i, text in enumerate(ui_text):
+        text_render = font.render(text, True, WHITE)
+        screen.blit(text_render, (SCREEN_WIDTH - text_render.get_width() - 10, 10 + i * (text_render.get_height() + 5)))
+
     # Update display
     pygame.display.flip()
-    
+
 # Quit Pygame
 pygame.quit()
 sys.exit()
